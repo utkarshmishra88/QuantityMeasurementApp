@@ -1,98 +1,106 @@
-# UC9 – Weight Measurement (Kilogram, Gram, Pound)
+# UC10 – Generic Quantity Class with Unit Interface
 
 ## Description
-Extends the Quantity Measurement Application to support a new measurement category: **Weight**.
+Refactors UC1–UC9 into a single generic design using:
 
-Supports:
-- Equality comparison
-- Unit conversion
-- Addition (implicit & explicit target unit)
+- `IMeasurable` interface
+- Generic `Quantity<U extends IMeasurable>` class
+- Unit enums implementing the interface (LengthUnit, WeightUnit)
 
-Weight units:
-- KILOGRAM (base unit)
-- GRAM (1 g = 0.001 kg)
-- POUND (1 lb ≈ 0.453592 kg)
-
-Length (UC1–UC8) remains fully functional and independent.
+Eliminates duplication between QuantityLength and QuantityWeight.
+Establishes scalable multi-category measurement architecture.
 
 ## Architecture
 
-### WeightUnit (Standalone Enum)
-- Stores conversion factor relative to KILOGRAM
+### IMeasurable (Interface)
+Defines unit contract:
+- getConversionFactor()
 - convertToBaseUnit(double)
 - convertFromBaseUnit(double)
+- getUnitName()
+
+### Unit Enums
+- LengthUnit implements IMeasurable
+- WeightUnit implements IMeasurable
+- Encapsulate conversion logic
 - Immutable and thread-safe
 
-### QuantityWeight
+### Generic Quantity<U extends IMeasurable>
 - private final double value
-- private final WeightUnit unit
-- equals() based on base-unit normalization
-- convertTo(targetUnit)
-- add(other)
-- add(other, targetUnit)
+- private final U unit
+- equals() using base-unit normalization
+- convertTo(U targetUnit)
+- add(Quantity<U>)
+- add(Quantity<U>, U targetUnit)
 - Immutable value object
+- hashCode() consistent with equals()
 
-## Equality Examples
+## Example Usage
 
-Quantity(1.0, KILOGRAM).equals(Quantity(1000.0, GRAM))  
+Length:
+
+new Quantity<>(1.0, LengthUnit.FEET)
+    .equals(new Quantity<>(12.0, LengthUnit.INCHES))
 → true
 
-Quantity(1.0, KILOGRAM).equals(Quantity(~2.20462, POUND))  
-→ true (within epsilon)
+Weight:
 
-Quantity(1.0, KILOGRAM).equals(Quantity(1.0, FOOT))  
-→ false (category mismatch)
-
-## Conversion Examples
-
-Quantity(1.0, KILOGRAM).convertTo(GRAM)  
+new Quantity<>(1.0, WeightUnit.KILOGRAM)
+    .convertTo(WeightUnit.GRAM)
 → Quantity(1000.0, GRAM)
 
-Quantity(2.0, POUND).convertTo(KILOGRAM)  
-→ Quantity(~0.907184, KILOGRAM)
+Addition:
 
-Quantity(500.0, GRAM).convertTo(POUND)  
-→ Quantity(~1.10231, POUND)
+new Quantity<>(1.0, LengthUnit.FEET)
+    .add(new Quantity<>(12.0, LengthUnit.INCHES), LengthUnit.FEET)
+→ Quantity(2.0, FEET)
 
-## Addition Examples
+## Cross-Category Safety
 
-Implicit target unit:
+new Quantity<>(1.0, LengthUnit.FEET)
+    .equals(new Quantity<>(1.0, WeightUnit.KILOGRAM))
+→ false
 
-Quantity(1.0, KILOGRAM).add(Quantity(1000.0, GRAM))  
-→ Quantity(2.0, KILOGRAM)
+Compiler prevents:
+Quantity<LengthUnit> ≠ Quantity<WeightUnit>
 
-Explicit target unit:
+## Improvements Over UC9
 
-Quantity(1.0, KILOGRAM).add(Quantity(1000.0, GRAM), GRAM)  
-→ Quantity(2000.0, GRAM)
-
-Quantity(2.0, KILOGRAM).add(Quantity(4.0, POUND), KILOGRAM)  
-→ Quantity(~3.82, KILOGRAM)
-
-## Validation Rules
-
-- Unit must not be null
-- Value must be finite (no NaN / Infinity)
-- Cross-category comparison returns false
-- Immutable objects (no mutation)
+- Removes duplicate Quantity classes
+- Removes duplicate unit enum logic
+- DRY principle enforced
+- SRP restored
+- Single source of truth for equality & arithmetic
+- Code growth becomes linear (not exponential)
+- Simplified QuantityMeasurementApp
 
 ## Concepts Covered
 
-- Multiple Measurement Categories
-- Base Unit Normalization (Kilogram)
-- Enum-Based Conversion Responsibility
-- Category Type Safety
-- Equality & HashCode Contract
-- Arithmetic on Value Objects
-- Method Overloading
-- Floating-Point Precision Handling
-- Architectural Scalability
-- Immutability & Thread Safety
+- Generic Programming (<U extends IMeasurable>)
+- Interface-Based Design
+- DRY Principle
+- Single Responsibility Principle
+- Open-Closed Principle
+- Polymorphism & Delegation
+- Type Safety with Generics
+- Runtime Category Validation
+- Immutability
+- Composition Over Inheritance
+- Scalable Multi-Category Architecture
 
-## Architectural Impact
+## Scalability Pattern
 
-- No modification required in Length module
-- Weight mirrors Length design (UC8 pattern)
-- Scalable for Volume, Temperature, etc.
-- Clean separation between categories
+To add new category:
+
+1. Create enum implementing IMeasurable (e.g., VolumeUnit)
+2. Use existing Quantity<VolumeUnit>
+3. No modification to Quantity class required
+
+## Benefits
+
+- One Quantity class for all categories
+- Unified comparison, conversion, addition logic
+- Minimal code duplication
 - Enterprise-ready extensible design
+- Backward compatible (UC1–UC9 preserved)
+- Cleaner, maintainable architecture
