@@ -15,7 +15,7 @@ public class QuantityMeasurementApp {
 		return demonstrateLengthEquality(l1, l2);
 	}
 
-	// 🔵 UC5 MAIN FEATURE
+	// UC5 MAIN FEATURE
 	// Static conversion API
 	public static double convert(double value, Length.LengthUnit from, Length.LengthUnit to) {
 
