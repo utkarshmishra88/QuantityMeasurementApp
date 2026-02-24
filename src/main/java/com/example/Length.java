@@ -52,7 +52,7 @@ public class Length {
         return compare(other);
     }
 
-    // 🔵 UC5 NEW FEATURE → Instance conversion
+    // UC5 NEW FEATURE → Instance conversion
     public Length convertTo(LengthUnit targetUnit) {
         if (targetUnit == null)
             throw new IllegalArgumentException("Target unit cannot be null");
