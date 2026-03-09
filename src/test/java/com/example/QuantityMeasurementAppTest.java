@@ -29,9 +29,7 @@ public class QuantityMeasurementAppTest {
     void shouldAddTwoQuantities() {
         QuantityDTO q1 = new QuantityDTO(10, "meter");
         QuantityDTO q2 = new QuantityDTO(5, "meter");
-
         QuantityDTO result = service.add(q1, q2);
-
         assertEquals(15, result.getValue());
     }
 
