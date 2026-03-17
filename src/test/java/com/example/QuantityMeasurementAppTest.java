@@ -17,6 +17,7 @@ public class QuantityMeasurementAppTest {
     private QuantityMeasurementController controller;
     private QuantityMeasurementCacheRepository repository;
 
+    
     @BeforeEach
     void setUp() {
         repository = QuantityMeasurementCacheRepository.getInstance();
@@ -24,6 +25,7 @@ public class QuantityMeasurementAppTest {
         controller = new QuantityMeasurementController(service);
     }
 
+    
     // BASIC SERVICE OPERATION TESTS
     @Test
     void shouldAddTwoQuantities() {

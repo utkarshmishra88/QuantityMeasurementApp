@@ -4,6 +4,7 @@
 UC15 refactors the Quantity Measurement Application from a monolithic design into a **professional N-Tier architecture**.  
 The application is organized into multiple layers to improve **separation of concerns, maintainability, scalability, and testability**.
 
+
 ## Architecture
 
 The application follows a **layered architecture**:
@@ -35,9 +36,9 @@ QuantityMeasurementApp
 ```
 
 Responsibilities:
-- Initialize components
-- Start application
-- Call controller methods
+-Initialize components
+-Start application
+-Call controller methods
 
 ---
 
